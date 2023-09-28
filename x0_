@@ -1,3 +1,5 @@
+import random
+
 game_dict = [
     [0, 0, 0],
     [0, 0, 0],
@@ -32,59 +34,144 @@ def get_column():
 
     return column_chosen
 
-def check_dict_for_clear(row_chosen, column_chosen):
+def check_dict_for_clear(row_chosen_p, column_chosen_p):
 
-    row_dict = game_dict[row_chosen -1]
-    grid_spot = row_dict[column_chosen -1]
+    row_dict = game_dict[row_chosen_p -1]
+    grid_spot = row_dict[column_chosen_p -1]
 
     if grid_spot ==0:
 
-        row_dict[column_chosen -1] =1
+        column_index = column_chosen_p -1
+        row_dict[column_index] =1
 
         return True
     else:
 
+        print('Nought /or Cross is here: CHOOSE ELSEWHERE')
         return False
 
-def check_if_won():
+def check_if_won(checking_type):
 
-    print('idk')
+    global game_decided
+
+    number = 0
+    if checking_type =='player':
+
+        number = 1
+    elif checking_type =='ai':
+
+        number = 2
+    
+    game_dict_1 = game_dict[0]
+    game_dict_2 = game_dict[1]
+    game_dict_3 = game_dict[2]
+    if game_dict_1[0] ==number and game_dict_1[1] ==number and game_dict_1[2] ==number:
+
+        game_decided = True
+    elif game_dict_2[0] ==number and game_dict_2[1] ==number and game_dict_2[2] ==number:
+
+        game_decided = True
+    elif game_dict_3[0] ==number and game_dict_3[1] ==number and game_dict_3[2] ==number:
+
+        game_decided = True
+    elif game_dict_1[0] ==number and game_dict_2[0] ==number and game_dict_3[0] ==number:
+
+        game_decided = True
+    elif game_dict_1[1] ==number and game_dict_2[1] ==number and game_dict_3[1] ==number:
+
+        game_decided = True
+    elif game_dict_1[2] ==number and game_dict_2[2] ==number and game_dict_3[2] ==number:
+
+        game_decided = True
+    elif game_dict_1[0] ==number and game_dict_2[1] ==number and game_dict_3[2] ==number:
+
+        game_decided = True
+    elif game_dict_1[2] ==number and game_dict_2[1] ==number and game_dict_3[0] ==number:
+
+        game_decided = True
+    
+    if game_decided ==True:
+
+        if number ==1:
+
+            print('Player has won!')
+        elif number ==2:
+
+            print('AI has won!')
 
 def display_game_dict():
 
     display_dict_1 = []
     display_dict_2 = []
     display_dict_3 = []
-    for x in game_dict[0]:
 
-        if x ==1:
-            display_dict_1.insert(0, 'X')
-        elif x==0:
-            display_dict_1.insert(1, ' ')
-        elif x ==2:
-            display_dict_1.insert(2, '0')
+    game_dict_1 = game_dict[0]
+    game_dict_2 = game_dict[1]
+    game_dict_3 = game_dict[2]
 
-    for x in game_dict[1]:
+    for x in range(len(game_dict_1)):
+        
+        if game_dict_1[x] ==0:
 
-        if x ==1:
-            display_dict_2.insert(0, 'X')
-        elif x==0:
-            display_dict_2.insert(1, ' ')
-        elif x ==2:
-            display_dict_2.insert(2, '0')
+            display_dict_1.insert(x, ' ')
+        elif game_dict_1[x] ==1:
 
-    for x in game_dict[2]:
+            display_dict_1.insert(x, 'X')
+        elif game_dict_1[x] ==2:
 
-        if x ==1:
-            display_dict_3.insert(0, 'X')
-        elif x==0:
-            display_dict_3.insert(1, ' ')
-        elif x ==2:
-            display_dict_3.insert(2, '0')
+            display_dict_1.insert(x, '0')
 
-    print(display_dict_1)
-    print(display_dict_2)
-    print(display_dict_3)
+    for x in range(len(game_dict_2)):
+        
+        if game_dict_2[x] ==0:
+
+            display_dict_2.insert(x, ' ')
+        elif game_dict_2[x] ==1:
+
+            display_dict_2.insert(x, 'X')
+        elif game_dict_2[x] ==2:
+
+            display_dict_2.insert(x, '0')
+    
+    for x in range(len(game_dict_3)):
+        
+        if game_dict_3[x] ==0:
+
+            display_dict_3.insert(x, ' ')
+        elif game_dict_3[x] ==1:
+
+            display_dict_3.insert(x, 'X')
+        elif game_dict_3[x] ==2:
+
+            display_dict_3.insert(x, '0')
+
+    print(display_dict_1[0], '|', display_dict_1[1], '|', display_dict_1[2])
+    print('--+---+--')
+    print(display_dict_2[0], '|', display_dict_2[1], '|', display_dict_2[2])
+    print('--+---+--')
+    print(display_dict_3[0], '|', display_dict_3[1], '|', display_dict_3[2])
+
+def choose_ai():
+
+    random_row = random.randint(0, 2)
+    random_column = random.randint(0, 2)
+
+    if game_dict[random_row][random_column] ==0:
+
+        game_dict[random_row][random_column] =2
+        return True
+    else:
+
+        return False
+
+def decide_ai_move():
+
+    ai_move_decided = False
+    while True:
+        if ai_move_decided ==True:
+            break
+
+        ai_move_decided = choose_ai()
 
 while game_decided ==False:
 
@@ -110,7 +197,23 @@ while game_decided ==False:
 
         move_decided, player_row, player_column = get_grid_pos()
 
+    decide_ai_move()
     display_game_dict()
 
+    check_if_won('player')
+    if not game_decided:
 
+        check_if_won('ai')
 
+    if game_decided:
+
+        try_again = input('Try again? [T] to try anything else to quit: ')
+        if try_again =='t' or try_again=='T':
+
+            game_decided =False
+            
+            game_dict = [
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0]
+            ]
