@@ -1,0 +1,235 @@
+# You will need to install python from https://www.python.org/downloads/
+# You will need to maybe install pip via VS code terminal or other means
+# You will also need to install pyperclip and pyautogui
+# If you have pip do "pip install pyperclip" and "pip install pyautogui"
+
+# Click infinity quiz
+# Set the page zoom to the max to stop it needing to scroll
+# Click 'AQA'
+# Scroll down to networks and click 'Networking'
+# Scroll up and click 'easier'
+# Click 'start' and click the 'X' button to remove the popup
+# Activate the script
+
+# amount of runs in loop before it force closes
+max_runs_before_stop = 5
+
+# Imports
+import time
+import math
+import pyautogui
+import pyperclip
+from difflib import SequenceMatcher
+
+# Variables
+blue_coords      = (0, 0)
+red_coords       = (0, 0)
+yellow_coords    = (0, 0)
+green_coords     = (0, 0)
+
+question_coords  = (0, 0)
+next_coords      = (0, 0)
+
+blue_rgb   = (59, 204, 255)
+red_rgb    = (255, 51, 51)
+
+text_rgb   = (56, 216, 120)
+
+y_increase       = 150 # how much pixels down from red/blue to reach green/yellow
+timeout          = 2 # time after answering question before clicking next
+wakeup_time      = 3 #time before script loads
+loop_activated   = True
+
+answer_array     = [
+    ['What type of cable carries data via light signals, providing faster transmission and no interference?', 'red'],
+    ['Which type of cable is more expensive than Ethernet cables?', 'red'],
+    ['What is the purpose of encryption in a network?', 'red'],
+    ['Which topology connects all devices to a hub or switch?', 'green'],
+    ['What is a PAN?', 'yellow'],
+    ['What are the advantages of LANs?', 'red'],
+    ['Which data transfer medium uses radio waves?', 'yellow'],
+    ['What is the main disadvantage of LANs?', 'yellow'],
+    ['What type of cable carries electrical signals?', 'blue'],
+    ['What is the main disadvantage of wireless networks?', 'yellow'],
+    ['What type of network covers a very short range?', 'blue'],
+    ['Which band frequencies are used by Wi-Fi?', 'yellow'],
+    ['What is a LAN?', 'red'],
+    ['What type of network covers a large geographical area?', 'yellow'],
+    ['Which data transfer medium uses light signals?', 'red'],
+    ['What are the advantages of wireless networks?', 'blue'],
+    ['What are the disadvantages of wireless networks?', 'red'],
+    ['What are the two main data transfer media used in networks?', 'blue'],
+    ['What is the purpose of passwords in securing a network?', 'red'],
+    ['What is the main disadvantage of LANs?', 'yellow'],
+    ['Which type of cable is more expensive than Ethernet cables?', 'red'],
+    
+]
+
+def quit_program(unique_respone):
+
+    print('VALUES HAVE ERRORED DURING SETUP')
+    print('CLOSING PROGRAM, TRY AGAIN!')
+
+    print(unique_respone)
+    quit()
+
+def debug_colors():
+
+    while True:
+        time.sleep(1)
+
+        mouse_pos = pyautogui.position()
+        pixel_color = pyautogui.pixel(mouse_pos[0], mouse_pos[1])
+        print(pixel_color)
+
+def setup_box_values(color_passed):
+
+    # find the color pixel
+    def find_color():
+
+        print('finding_color')
+        pyautogui_screenshot = pyautogui.screenshot()
+
+        # check each pixel on screen
+        for x in range(pyautogui_screenshot.width):
+            for y in range(pyautogui_screenshot.height):
+
+                color_pixel = pyautogui_screenshot.getpixel((x, y))
+                if color_pixel ==color_passed:
+                    return (x, y)
+
+    # init the search
+    pixel_coords = find_color()
+
+    # return the coords
+    return pixel_coords
+
+def setup_text_values(text):
+
+    # shortcut activate
+    pyautogui.shortcut('ctrl', 'f')
+    pyautogui.typewrite(text, .01)
+
+    print('finding_text')
+    pyautogui_screenshot = pyautogui.screenshot()
+
+    # check each pixel on screen
+    for x in range(pyautogui_screenshot.width):
+        for y in range(pyautogui_screenshot.height):
+
+            color_pixel = pyautogui_screenshot.getpixel((x, y))
+            if color_pixel ==text_rgb:
+                return (x, y)
+            
+def retrieve_current_question():
+
+    # make global
+    global answer_array
+
+    # select question
+    for x in range(3):
+        pyautogui.leftClick(question_coords[0], question_coords[1])
+
+    # shortcut
+    pyautogui.shortcut('ctrl', 'c')
+    clipboard_stored = pyperclip.paste()
+    
+    # find correct array
+    def check_ratio(str_match, str_contender):
+        return SequenceMatcher(None, str_match, str_contender).ratio()
+    
+    highest_ratio = 0
+    highest_array = ''
+
+    for x in range(len(answer_array)):
+
+        curr_ratio = check_ratio(clipboard_stored, answer_array[x][0])
+
+        print(highest_ratio, curr_ratio, highest_array)
+        if curr_ratio >highest_ratio:
+
+            highest_ratio = curr_ratio
+            highest_array = answer_array[x]
+
+    if highest_array =='':
+        loop_activated = False
+        quit_program('response: Unrecognized question')
+    
+    # return array
+    return highest_array
+
+def press_location(box_coords):
+
+    # click box
+    pyautogui.click(box_coords[0], box_coords[1])
+
+# retrieving current question
+print('Swap questions if a non-unique word is not in the middle')
+current_question = input('Enter a unique word of the current question thats in the middle of the sentence: ')
+
+# give person time to switch
+time.sleep(wakeup_time)
+print('activated program')
+
+# setting up values for individual pc
+blue_coords = setup_box_values(blue_rgb)
+red_coords = setup_box_values(red_rgb)
+if blue_coords =='None' or red_coords =='None' or yellow_coords =='None' or green_coords =='None':
+    quit_program('response: Error finding color positions')
+
+# setup button coords
+next_coords = setup_text_values('Next Question')
+
+# setup question coords
+question_coords = setup_text_values(current_question)
+if question_coords =='None' or next_coords =='None':
+    quit_program('respone: Error finding text positions')
+
+# finished setup
+print('setup of variables finished')
+print('beginning answer loop')
+
+count_amount = 0
+
+#pyautogui.mouseInfo()
+#debug_colors()
+
+# beginning loop
+while loop_activated:
+
+    # close statements
+    count_amount +=1
+    if count_amount >=max_runs_before_stop:
+
+        loop_activated = False
+        quit_program('respone: program reach max runs')
+    elif loop_activated ==False:
+        
+        break
+    
+
+    # find array
+    answered_array = retrieve_current_question()
+    box_color = answered_array[1]
+
+    # click button
+    if box_color =='red':
+
+        press_location(red_coords)
+    elif box_color =='blue':
+
+        press_location(blue_coords)
+    elif box_color =='green':
+        
+        green_coords = (red_coords[0], red_coords[1] +y_increase)
+        press_location(green_coords)
+    elif box_color =='yellow':
+
+        yellow_coords = (blue_coords[0], blue_coords[1] +y_increase)
+        press_location(yellow_coords)
+
+    # timeout for it to load
+    time.sleep(timeout)
+
+    # click next question
+    press_location(next_coords)
