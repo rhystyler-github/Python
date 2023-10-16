@@ -62,8 +62,45 @@ answer_array     = [
     ['What is the purpose of passwords in securing a network?', 'red'],
     ['What is the main disadvantage of LANs?', 'yellow'],
     ['Which type of cable is more expensive than Ethernet cables?', 'red'],
-    
 ]
+
+def instructions_output():
+
+    print("""\
+
+                                       ._ o o
+        AUTO CS UK REVISE TOOL         \_`-)|_
+           BY RHYS TYLER            ,""       \ 
+                                  ,"  ## |   ಠ ಠ. 
+                                ," ##   ,-\__    `.
+                              ,"       /     `--._;)
+                            ,"     ## /
+                          ,"   ##    /
+
+
+    """)
+
+    print('Auto completer for CSUKREVISE to automatically answer all infinite quiz questions..')
+    print('Instructions \n[1] Enter infinite quiz \n[2] Select "AQA", "EASIER" and "NETWORKING" \n[3] Press "Start" \n')
+
+    resume_program = False
+    while True:
+        if resume_program ==True:
+            break
+
+        choice_made = input('Type "RESUME" to continue: ')
+        if str.upper(choice_made) =='RESUME':
+
+            resume_program = True
+            print('ANSWER THE FOLLOWING QUESTIONS AND SWITCH QUICKLY TO INFINITE QUIZ WEBPAGE')
+        else:
+
+            print('Invalid \n')
+    
+    for i in range(3):
+
+        print('RESUMING IN', str(i +1))
+        time.sleep(1)
 
 def quit_program(unique_respone):
 
@@ -144,8 +181,6 @@ def retrieve_current_question():
     for x in range(len(answer_array)):
 
         curr_ratio = check_ratio(clipboard_stored, answer_array[x][0])
-
-        print(highest_ratio, curr_ratio, highest_array)
         if curr_ratio >highest_ratio:
 
             highest_ratio = curr_ratio
@@ -163,9 +198,23 @@ def press_location(box_coords):
     # click box
     pyautogui.click(box_coords[0], box_coords[1])
 
-# retrieving current question
-print('Swap questions if a non-unique word is not in the middle')
-current_question = input('Enter a unique word of the current question thats in the middle of the sentence: ')
+# retrieving info
+instructions_output()
+
+print('\nIf question was "What is complex in science", you would enter "complex" [case sensitive]')
+current_question = input('Enter a unique word that is in the middle of the question text: ')
+
+# separater
+print('\n---------------------------------------------------------------------------')
+
+print('\nAmount of loops for the question solver to do before stopping')
+max_runs_before_stop = int(input('Enter amount of questions to answer before program quits: '))
+
+# separater
+print('\n---------------------------------------------------------------------------')
+
+print('\nRecommend 1-4')
+timeout = int(input('Amount of time before the program clicks "Next Question" after answering [depends on internet speed]: '))
 
 # give person time to switch
 time.sleep(wakeup_time)
