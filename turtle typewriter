@@ -1,0 +1,138 @@
+# only works with ! and hello
+import math, turtle, time, threading
+
+word_to_type = 'hello hello hello'
+
+max_size_x = 1250
+increase_size_y = 100
+
+constant_letter_size = 80
+constant_letter_bounding_box = 85
+
+max_letters_x_axis = max_size_x /constant_letter_bounding_box
+single_x_increase = max_size_x /max_letters_x_axis
+
+myTurtle = turtle.Turtle()
+myTurtle.speed(10)
+
+myScreen = turtle.Screen()
+
+def change_screen_proportions(width, height):
+
+    myScreen.setup(width, height)
+    print(width, height)
+
+def typewrite_letter(letter, x_pos, y_pos):
+
+    myTurtle.penup()
+    myTurtle.goto(x=x_pos, y=y_pos)
+    myTurtle.pendown()
+
+    if letter =='H':
+
+        myTurtle.right(90)
+        myTurtle.forward(constant_letter_size)
+        myTurtle.back(constant_letter_size /2)
+        myTurtle.left(90)
+        myTurtle.forward(constant_letter_size / 1.5)
+        myTurtle.right(90)
+        myTurtle.forward(constant_letter_size /2)
+        myTurtle.back(constant_letter_size)
+        myTurtle.left(90)
+    elif letter =='E':
+
+        for x in range(2):
+
+            myTurtle.forward(constant_letter_size /1.5)
+            myTurtle.back(constant_letter_size /1.5)
+            myTurtle.right(90)
+            myTurtle.forward(constant_letter_size /2)
+            myTurtle.left(90)
+
+        myTurtle.forward(constant_letter_size /1.5)
+    elif letter =='L':
+
+        myTurtle.right(90)
+        myTurtle.forward(constant_letter_size)
+        myTurtle.left(90)
+        myTurtle.forward(constant_letter_size /1.25)
+    elif letter =='O':
+
+        for x in range(4):
+
+            myTurtle.forward(constant_letter_size)
+            myTurtle.right(90)
+    elif letter ==' ':
+
+        pass
+    elif letter =='!':
+
+        for x in range(2):
+
+            myTurtle.forward(constant_letter_size /2.75)
+            myTurtle.right(90)
+            myTurtle.forward(constant_letter_size /1.5)
+            myTurtle.right(90)
+
+        myTurtle.right(90)
+        myTurtle.penup()
+        myTurtle.forward(constant_letter_size)
+        myTurtle.pendown()
+
+        for x in range(2):
+
+            myTurtle.left(90)
+            myTurtle.forward(constant_letter_size /2.75)
+            myTurtle.left(90)
+            myTurtle.forward(constant_letter_size /3.8)
+
+        myTurtle.left(90)
+
+        
+
+def __main__():
+
+    letter_count = len(word_to_type)
+
+    # get x axis size
+    x_size = letter_count *single_x_increase
+    if x_size >=max_size_x:
+
+        x_size = max_size_x
+
+    # get y axis amount to * size
+    lines_down = 0
+    temp_int = 0
+    for x in range(letter_count):
+
+        temp_int +=1
+        if temp_int >=max_letters_x_axis:
+
+            lines_down +=1
+            temp_int = 0
+
+
+    y_size = lines_down
+    y_size = math.ceil(y_size +1)
+    y_size = increase_size_y *y_size
+
+    change_screen_proportions(x_size, y_size)
+
+    starting_coord_x, starting_coord_y = 0 -(x_size /2), 0 +(y_size /2)
+
+    x_pos, y_pos = starting_coord_x +10, starting_coord_y -20
+
+    for letter_index in range(len(word_to_type)):
+
+        letter_found = word_to_type[letter_index]
+        typewrite_letter(str.upper(letter_found), x_pos, y_pos)
+
+        x_pos += constant_letter_bounding_box
+        if x_pos >=x_size /2:
+
+            x_pos = starting_coord_x +10
+            y_pos = y_pos -(constant_letter_bounding_box *1.25)
+        
+
+__main__()
+myScreen.exitonclick()
